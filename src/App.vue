@@ -1,6 +1,13 @@
 <template>
   <div id="app">
-    <Home v-bind:dati_regioni_list="dati_regioni_list" v-bind:list_of_regioni="list_of_regioni" />
+    <Home
+    v-if="dati_regioni_list && json_regioni && json_nazionale && json_nazionale_latest"
+    v-bind:dati_regioni_list="dati_regioni_list"
+    v-bind:list_of_regioni="list_of_regioni"
+    v-bind:json_regioni="json_regioni"
+    v-bind:json_nazionale="json_nazionale"
+    v-bind:json_nazionale_latest="json_nazionale_latest"
+    />
   </div>
 </template>
 
@@ -16,7 +23,9 @@ export default {
   data() {
     return {
       json_nazionale: null,
+      json_nazionale_latest: null,
       list_of_province: null,
+      json_regioni: null,
       list_of_regioni: null,
       dati_province_map: new Map(),
       dati_province_list: null,
@@ -64,13 +73,13 @@ export default {
       )
       .then(
         response => (
-          // (this.json_regioni = response.data),
+          (this.json_regioni = response.data),
           (this.list_of_regioni = new Set(
             response.data.map(i => i.denominazione_regione)
           )),
           (this.list_of_regioni.forEach(element => {
             var roba = response.data.filter(i => i.denominazione_regione == element)
-            this.correctData(roba)
+            // this.correctData(roba)
             this.dati_regioni_map.set(
               element,
               roba
@@ -85,11 +94,7 @@ export default {
       )
       .then(
         response => (
-          //(this.json_regioni = response.data),
-          (this.totale_casi = response.data[0].totale_casi),
-          (this.totale_deceduti = response.data[0].deceduti),
-          (this.totale_guariti = response.data[0].dimessi_guariti),
-          (this.totale_terapia_intensiva = response.data[0].terapia_intensiva)
+          (this.json_nazionale_latest = response.data)
         )
       );
     
@@ -114,6 +119,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 }
 </style>

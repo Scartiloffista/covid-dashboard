@@ -1,5 +1,5 @@
 function getDates(list_of_items) {
-    return list_of_items.map(i => i.data.split(" ")[0]);
+    return list_of_items.map(i => i.data.split("T")[0]);
 }
 
 function getInfo(list_of_report, key) {
@@ -7,7 +7,7 @@ function getInfo(list_of_report, key) {
   }
 
 function createDataSet(list_of_report, required_fields) {
-    var list_of_colors = ['red', 'green', 'orange', 'yellow', 'blue ']
+    var list_of_colors = ['red', 'green', 'orange', 'peru', 'blue ']
     var dataSet = new Object()
     dataSet.labels = getDates(list_of_report)
     dataSet.datasets = []

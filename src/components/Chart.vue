@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-multiline">
       
-    <div v-for="i of datasets" :value="i[0]" v-bind:key="i[0]" class=" column is-third small">
+    <div v-for="i of datasets" v-bind:value="i[0]" v-bind:key="nome + i[0]" class=" column is-third">
         {{ i[0] }}
         <line-chart v-bind:chart-data="i[1]" class="small"></line-chart>
     </div>
@@ -18,20 +18,25 @@ export default Vue.extend({
       LineChart
   },
   props: {
-    dati_regioni_list: Array,
-    // required_fields: Array
+    dati_regioni_list: Object,
+    nome: String,
+    required_fields: Array
   },
   data() {
     return {
       datasets: new Array(),
-      required_fields: ["deceduti", "dimessi_guariti", "casi_nuovi", 'totale_casi']
     };
   },
   mounted() {
-    this.dati_regioni_list.forEach(element => {
-          this.datasets.push([element[0], createDataSet(element[1], this.required_fields)])
-      });
-
+    // this.dati_regioni_list.forEach(element => {
+    //       this.datasets.push([element[0], createDataSet(element[1], this.required_fields)])
+    //   });
+    for (const key in this.dati_regioni_list) {
+        console.log()
+        this.datasets.push([key, createDataSet(this.dati_regioni_list[key], this.required_fields)])
+        
+    
+    }
     }
 }
 // watch: {
@@ -46,10 +51,9 @@ export default Vue.extend({
 );
 </script>
 
-
 <style>
-.small {
-  max-width: 400px;
-  /* margin:  150px auto; */
-}
+  .small {
+    max-width: 400px;
+    margin:  auto;
+  }
 </style>

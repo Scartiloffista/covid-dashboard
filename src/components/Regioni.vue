@@ -24,7 +24,7 @@
       <!-- <p>Totale deceduti: {{current_json_list[0].deceduti }}</p> -->
     </div>
     <div class="column">
-      <div class="small">
+      <div class="">
         <line-chart v-if="picked" v-bind:chart-data="data_for_charts"></line-chart>
       </div>
     </div>
@@ -51,9 +51,9 @@ export default {
   },
 
   watch: {
-    picked: function() {
-      this.current_json_list = this.json_regioni.filter(i => i[0] == this.picked)[0][1]
-      this.data_for_charts = createDataSet(this.current_json_list, ['deceduti', 'dimessi_guariti', 'casi_nuovi', 'terapia_intensiva', 'totale_casi'])
+    picked: function(val) {
+      this.current_json_list = this.json_regioni[val]
+      this.data_for_charts = createDataSet(this.current_json_list, ['deceduti', 'dimessi_guariti', 'terapia_intensiva', 'totale_casi'])
 
     }
   },
@@ -103,10 +103,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.small {
-  max-width: 600px;
-  /* margin:  150px auto; */
-}
-</style>
