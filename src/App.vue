@@ -100,15 +100,6 @@ export default {
     
   }
 
-
-
-
-
-
-
-
-
-
   }
 </script>
 
