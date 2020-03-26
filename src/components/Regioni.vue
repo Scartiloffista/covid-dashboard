@@ -5,21 +5,24 @@
       <b-field class="is-grouped">
         <b-select placeholder="Seleziona una regione" v-model="picked">
           <option v-for="option in list_of_regioni" :value="option" :key="option">{{ option }}</option>
+        </b-select></b-field><b-field>
+                <b-select placeholder="Seleziona una data" v-model="giorno_selezionato">
+          <option v-for="option in giorni" :value="option" :key="option">{{ option }}</option>
         </b-select>
       </b-field>
-      <div v-if="current_json_list && current_json_list.length > 0" style="text-align: left">
-        <p class="title">Dati di oggi:</p>
-        <p>Casi nuovi: {{current_json_list[current_json_list.length -1].casi_nuovi}}</p>
-        <p>Deceduti: {{current_json_list[current_json_list.length - 1].deceduti }}</p>
-        <p>Guariti: {{current_json_list[current_json_list.length - 1].dimessi_guariti }}</p>
-        <p>Ricoverati con sintomi: {{current_json_list[current_json_list.length -1].ricoverati_con_sintomi}}</p>
-        <p>Ospedalizzati: {{current_json_list[current_json_list.length -1].totale_ospedalizzati}}</p>
-        <p>Isolamento domiciliare: {{current_json_list[current_json_list.length -1].isolamento_domiciliare}}</p>
-        <p>Attualmente positivi: {{current_json_list[current_json_list.length -1].totale_attualmente_positivi}}</p>
-        <!-- <p>nuovi_attualmente_positivi: {{current_json_list[current_json_list.length -1].nuovi_attualmente_positivi}}</p>
-        <p>dimessi_guariti: {{current_json_list[current_json_list.length -1].dimessi_guariti}}</p>
-        <p>totale_casi: {{current_json_list[current_json_list.length -1].totale_casi}}</p>
-        <p>tamponi: {{current_json_list[current_json_list.length -1].tamponi}}</p>-->
+      <div v-if="current_json_list && oggi && picked && current_json_list.length > 0" style="text-align: left">
+        <p class="title">Dati del {{giorno_selezionato}}</p>
+        <p>Casi nuovi: {{oggi.casi_giornalieri}}</p>
+        <p>Deceduti: {{oggi.deceduti }}</p>
+        <p>Guariti: {{oggi.dimessi_guariti }}</p>
+        <p>Ricoverati con sintomi: {{oggi.ricoverati_con_sintomi}}</p>
+        <p>Ospedalizzati: {{oggi.totale_ospedalizzati}}</p>
+        <p>Isolamento domiciliare: {{oggi.isolamento_domiciliare}}</p>
+        <p>Attualmente positivi: {{oggi.totale_attualmente_positivi}}</p>
+        <!-- <p>nuovi_attualmente_positivi: {{oggi.nuovi_attualmente_positivi}}</p>
+        <p>dimessi_guariti: {{oggi.dimessi_guariti}}</p>
+        <p>totale_casi: {{oggi.totale_casi}}</p>
+        <p>tamponi: {{oggi.tamponi}}</p>-->
       </div>
       <!-- <p>Totale deceduti: {{current_json_list[0].deceduti }}</p> -->
     </div>
@@ -38,23 +41,26 @@ import createDataSet from "../utils.js";
 
 export default {
   name: "Regioni",
-  props: ["list_of_regioni", "json_regioni"],
+  props: ["list_of_regioni", "json_regioni", "giorni"],
   components: {
     LineChart
   },
   data() {
     return {
       picked: null,
+      oggi: null,
       current_json_list: null,
-      data_for_charts: null
+      data_for_charts: null,
+      giorno_selezionato: null
     };
   },
-
   watch: {
     picked: function(val) {
       this.current_json_list = this.json_regioni[val]
       this.data_for_charts = createDataSet(this.current_json_list, ['deceduti', 'dimessi_guariti', 'terapia_intensiva', 'totale_casi'])
-
+    },
+    giorno_selezionato: function (val){
+      this.oggi = this.current_json_list.filter(i => i.data.startsWith(val))[0]
     }
   },
 //   beforeUpdate() {
@@ -76,29 +82,6 @@ export default {
       var obj = createDataSet(this.current_json_list, ['deceduti', 'dimessi_guariti', 'casi_nuovi'])
       console.log(obj)
       return obj
-      // return {
-      //   labels: getDates(this.current_json_list),
-      //   datasets: [
-      //     {
-      //       label: "Deceduti",
-      //       borderColor: "red",
-      //       fill: false,
-      //       data: this.getInfo("deceduti")
-      //     },
-      //     {
-      //       label: "Guariti",
-      //       borderColor: "green",
-      //       fill: false,
-      //       data: this.getInfo("dimessi_guariti")
-      //     },
-      //     {
-      //       label: "Casi Nuovi",
-      //       borderColor: "orange",
-      //       fill: false,
-      //       data: this.getInfo("casi_nuovi")
-      //     }
-      //   ]
-      // };
     },
   }
 };

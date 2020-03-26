@@ -32,7 +32,7 @@
       <!--        {{dati_regioni_list}}-->
       <b-tabs v-model="activeTab">
         <b-tab-item label="Regioni">
-          <Regioni v-if="dati" v-bind:json_regioni="dati" v-bind:list_of_regioni="list_of_regioni" />
+          <Regioni v-if="dati" v-bind:json_regioni="dati" v-bind:list_of_regioni="list_of_regioni" v-bind:giorni="giorni" />
         </b-tab-item>
 
         <b-tab-item label="Riepilogo">
@@ -40,6 +40,7 @@
             v-if="dati && activeTab == 1"
             v-bind:dati_regioni_list="dati"
             v-bind:required_fields="required_fields_riepilogo"
+            v-bind:options_for_chart="options"
             nome="riepilogo"
           />
         </b-tab-item>
@@ -49,6 +50,7 @@
             v-if="dati && activeTab == 2"
             v-bind:dati_regioni_list="dati"
             v-bind:required_fields="required_fields_andamento"
+            v-bind:options_for_chart="options_log"
             nome="andamento"
           />
         </b-tab-item>
@@ -67,21 +69,51 @@ export default Vue.extend({
     return {
       activeTab: 0,
       dati: null,
-      required_fields_riepilogo: ["deceduti", "dimessi_guariti", "totale_casi"],
-      required_fields_andamento: ["casi_nuovi", "deceduti_giornalieri"],
+      giorni: null,
+      required_fields_riepilogo: [
+        "deceduti",
+        "dimessi_guariti",
+        "totale_casi",
+        "tamponi"
+      ],
+      required_fields_andamento: [
+        "casi_giornalieri",
+        "deceduti_giornalieri",
+        "tamponi_giornalieri",
+        "guariti_giornalieri"
+      ],
+      options_log: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                },
+                type: 'logarithmic'
+            }]
+        }
+      },
+      options: {
+          scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                },
+            }]
+        }
+      },
 
-      totale_casi: 0,
-      totale_deceduti: 0,
-      totale_guariti: 0,
-      totale_terapia_intensiva: 0
-    };
+        totale_casi: 0,
+        totale_deceduti: 0,
+        totale_guariti: 0,
+        totale_terapia_intensiva: 0
+    }
+  
   },
   props: {
     dati_regioni_list: Array,
     list_of_regioni: Set,
     json_nazionale: Array,
     json_nazionale_latest: Array,
-
     json_regioni: Array
   },
   components: {
@@ -90,6 +122,7 @@ export default Vue.extend({
   },
   mounted() {
     var dati = new Object();
+    this.giorni = new Set(this.json_regioni.map(i => i.data.split("T")[0]))
     this.json_regioni.forEach(element => {
       if (
         !Object.prototype.hasOwnProperty.call(
@@ -103,7 +136,7 @@ export default Vue.extend({
     });
 
     this.arricchisciDati(dati);
-      this.dati = dati
+    this.dati = dati;
     this.totale_casi = this.json_nazionale_latest[0].totale_casi;
     this.totale_deceduti = this.json_nazionale_latest[0].deceduti;
     this.totale_guariti = this.json_nazionale_latest[0].dimessi_guariti;
@@ -119,11 +152,18 @@ export default Vue.extend({
     correctData(item) {
       item[0].casi_giornalieri = 0;
       item[0].deceduti_giornalieri = 0;
+      item[0].tamponi_giornalieri = 0;
+      item[0].guariti_giornalieri = 0;
       for (let index = 1; index < item.length; index++) {
-        item[index].casi_giornalieri =
-          item[index].totale_casi - item[index - 1].totale_casi;
-        item[index].deceduti_giornalieri =
-          item[index].deceduti - item[index - 1].deceduti;
+        var oggi = item[index];
+        var ieri = item[index - 1];
+        oggi.casi_giornalieri = oggi.totale_casi - ieri.totale_casi;
+        oggi.guariti_giornalieri = oggi.dimessi_guariti - ieri.dimessi_guariti;
+        oggi.deceduti_giornalieri = oggi.deceduti - ieri.deceduti;
+        oggi.tamponi_giornalieri = oggi.tamponi - ieri.tamponi;
+        // if(oggi.tamponi_giornalieri < 0) oggi.tamponi_giornalieri = 0
+        oggi.variazione_percentuale_casi =
+          (oggi.totale_casi - ieri.totale_casi) / ieri.casi;
       }
     }
   }
@@ -133,6 +173,6 @@ export default Vue.extend({
 
 <style>
 .b-tabs {
-  margin: 2rem auto
+  margin: 2rem auto;
 }
 </style>

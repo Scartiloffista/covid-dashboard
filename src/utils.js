@@ -15,7 +15,7 @@ function createDataSet(list_of_report, required_fields) {
         dataSet.datasets.push(
             {
                 label: element,
-                fill: false,
+                fill: true,
                 borderColor: list_of_colors.shift(),
                 data: getInfo(list_of_report, element)
             }

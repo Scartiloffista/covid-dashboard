@@ -3,7 +3,7 @@
       
     <div v-for="i of datasets" v-bind:value="i[0]" v-bind:key="nome + i[0]" class=" column is-third">
         {{ i[0] }}
-        <line-chart v-bind:chart-data="i[1]" class="small"></line-chart>
+        <line-chart v-bind:chart-data="i[1]" v-bind:options="options_for_chart" class="small"></line-chart>
     </div>
   </div>
 </template>
@@ -20,11 +20,13 @@ export default Vue.extend({
   props: {
     dati_regioni_list: Object,
     nome: String,
-    required_fields: Array
+    required_fields: Array,
+    options_for_chart: Object
   },
   data() {
     return {
       datasets: new Array(),
+
     };
   },
   mounted() {
