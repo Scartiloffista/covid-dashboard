@@ -164,6 +164,15 @@
               nome="andamento"
             />
           </b-tab-item>
+          <!-- <b-tab-item label="Varie">
+            <Chart
+              v-if="dati && activeTab == 3"
+              v-bind:dati_regioni_list="dati"
+              v-bind:required_fields="required_fields_varie"
+              v-bind:options_for_chart="options"
+              nome="varie"
+            />
+          </b-tab-item> -->
         </b-tabs>
       </div>
     </section>
@@ -182,6 +191,7 @@ export default Vue.extend({
       dati: null,
       giorni: null,
       isInfoModalActive: false,
+      required_fields_varie: ["percentuale_casi_su_tamponi"],
       required_fields_riepilogo: [
         "deceduti",
         "dimessi_guariti",
@@ -192,7 +202,8 @@ export default Vue.extend({
         "casi_giornalieri",
         "deceduti_giornalieri",
         "tamponi_giornalieri",
-        "guariti_giornalieri"
+        "guariti_giornalieri",
+        "percentuale_casi_su_tamponi"
       ],
       options_log: {
         scales: {
@@ -261,14 +272,17 @@ export default Vue.extend({
     arricchisciDati(dati) {
       for (const key in dati) {
         const element = dati[key];
+        console.log(key);
         this.correctData(element);
       }
     },
     correctData(item) {
-      item[0].casi_giornalieri = 0;
-      item[0].deceduti_giornalieri = 0;
-      item[0].tamponi_giornalieri = 0;
-      item[0].guariti_giornalieri = 0;
+      item[0].casi_giornalieri = item[0].totale_casi;
+      item[0].deceduti_giornalieri = item[0].deceduti;
+      item[0].tamponi_giornalieri = item[0].tamponi;
+      item[0].guariti_giornalieri = item[0].dimessi_guariti;
+      item[0].percentuale_casi_su_tamponi =
+        (item[0].totale_casi / item[0].tamponi) * 100;
       for (let index = 1; index < item.length; index++) {
         var oggi = item[index];
         var ieri = item[index - 1];
@@ -279,6 +293,10 @@ export default Vue.extend({
         // if(oggi.tamponi_giornalieri < 0) oggi.tamponi_giornalieri = 0
         oggi.variazione_percentuale_casi =
           (oggi.totale_casi - ieri.totale_casi) / ieri.casi;
+        oggi.percentuale_casi_su_tamponi =
+          (oggi.casi_giornalieri / oggi.tamponi_giornalieri) * 100;
+        // console.log(`Fifteen is ${five + ten} and not ${2 * five + ten}.`)
+        // console.log(` ${oggi.casi_giornalieri} su ${oggi.tamponi} * 100 fa ovviamente ${oggi.percentuale_casi_su_tamponi}`)
       }
     }
   }
