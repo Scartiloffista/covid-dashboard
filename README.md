@@ -1,4 +1,6 @@
-# covid-dashboard-3
+# Covid Dashboard
+
+COVID-19 Dashboard focused on Italian data, provided by [Protezione Civile](https://github.com/pcm-dpc/COVID-19/)
 
 ## Project setup
 ```
