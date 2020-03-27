@@ -1,6 +1,7 @@
 # Covid Dashboard
 
-COVID-19 Dashboard focused on Italian data, provided by [Protezione Civile](https://github.com/pcm-dpc/COVID-19/)
+COVID-19 Dashboard focused on Italian data, provided by [Protezione Civile](https://github.com/pcm-dpc/COVID-19/).
+Written with [Vue](vuejs.org/), [vue-chartjs](https://vue-chartjs.org/) and [Buefy](buefy.org/)
 
 ## Project setup
 ```
